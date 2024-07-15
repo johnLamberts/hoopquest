@@ -6,8 +6,6 @@ class StudentService {
   static async addStudent(student: StudentInterface) {
     const newStudent = new StudentModel(student);
 
-    console.log(newStudent);
-
     return await newStudent.save();
   }
 }

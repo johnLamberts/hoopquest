@@ -1,0 +1,17 @@
+node_modules
+logs/*.log
+
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+node_modules
+
+# dotenv environment variable files
+.env.development

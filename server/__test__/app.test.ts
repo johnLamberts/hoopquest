@@ -27,4 +27,27 @@ describe("app server", () => {
       });
     });
   });
+
+  /**
+   * Testing GET /anything-routes-here-not-specified-in-actual-endpoints
+   *
+   */
+
+  describe("GET /anything-routes-not-specific-in-actual-endpoints", () => {
+    describe("given the endpoint does not exist", () => {
+      it("should return a 404 status with not found message", () => {
+        request(app)
+          .get("/asdkasdj-asdj")
+          .set("Accept", "application/json")
+          .expect("Content-Type", /json/)
+          .then((response) => {
+            expect(response.body).toMatchObject({
+              statusCode: 404,
+              status: "error-not-found",
+              message: "Not found",
+            });
+          });
+      });
+    });
+  });
 });

@@ -19,3 +19,5 @@ node_modules
 
 # jest
 jest.config.js
+
+coverage

@@ -15,6 +15,7 @@ node_modules
 
 # dotenv environment variable files
 .env.development
+.env.test
 
 # jest
 jest.config.js

@@ -1,7 +1,7 @@
 import colors from "colors.ts";
 import express, { Application, NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
-import errorHandlingMiddleware from "@/middlewares/errorHandling";
+import errorHandlingMiddleware from "./middlewares/errorHandling";
 import AppError from "./utils/app-error";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";

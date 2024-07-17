@@ -10,6 +10,7 @@ dotenv.config({
 export const environmentConfig = {
   PORT: process.env.PORT,
   JWT_KEY: process.env.JWT_KEY,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
   DATABASE_URI: process.env.DATABASE_URI as string,
   DATABASE_NAME: process.env.DATABASE_NAME,
   TEST_ENV_DATABASE_URI: process.env.TEST_ENV_DATABASE_URI as string,

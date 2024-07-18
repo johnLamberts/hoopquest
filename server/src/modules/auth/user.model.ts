@@ -68,6 +68,15 @@ const UserSchema: Schema<IUserDocument> = new Schema(
       default: authorizationRoles.user,
     },
 
+    profileImg: {
+      type: String,
+      required: true,
+    },
+
+    cloudinary_id: {
+      type: String,
+    },
+
     status: {
       type: String,
       enum: ["pending", "active"],
@@ -80,6 +89,7 @@ const UserSchema: Schema<IUserDocument> = new Schema(
       type: String,
       required: false,
     },
+
     resetPasswordExpires: {
       type: Date,
       required: false,

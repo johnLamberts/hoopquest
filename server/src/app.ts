@@ -30,6 +30,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Server all static files inside public directory
+app.use("/static", express.static("public"));
+
 // api endpoint
 // app.use("/api/v1/", router);
 router(app);

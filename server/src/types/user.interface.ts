@@ -11,6 +11,8 @@ export interface IUser extends Document {
   profileImage: string;
   status?: string;
   isVerified?: boolean;
+  profileImg?: string;
+  cloudinary_id?: string;
   isDeleted?: boolean;
   createdAt: string;
   updatedAt?: string;

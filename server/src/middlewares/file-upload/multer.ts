@@ -3,9 +3,17 @@ import { randomUUID } from "crypto";
 import { Request } from "express";
 import createHttpError from "http-errors";
 import multer from "multer";
+import fs from "fs";
+import path from "path";
 
 type DestinationCallback = (error: Error | null, destination: string) => void;
 type FileNameCallback = (error: Error | null, fillename: string) => void;
+
+const ensureDirectoryExists = (filePath: string): void => {
+  if (!fs.existsSync(filePath)) {
+    fs.mkdirSync(filePath, { recursive: true });
+  }
+};
 
 export const fileStorage = multer.diskStorage({
   destination: (
@@ -13,11 +21,21 @@ export const fileStorage = multer.diskStorage({
     file: Express.Multer.File,
     callback: DestinationCallback
   ): void => {
-    const fileName = request.originalUrl.includes("users")
+    const fileName = request.originalUrl.includes("auth")
       ? "users"
       : "products";
 
-    callback(null, `public/uploades/${fileName}`);
+    // callback(null, `public/uploads/${fileName}`);
+
+    const uploadPath = path.resolve(
+      process?.env?.PWD as string,
+      "public/uploads",
+      fileName
+    );
+
+    ensureDirectoryExists(uploadPath);
+
+    callback(null, uploadPath);
   },
 
   filename: (
@@ -34,7 +52,7 @@ export const fileStorage = multer.diskStorage({
     if (!imageExtension) {
       callback(
         createHttpError(422, "Invalid request (File type is not supported)"),
-        String(false)
+        ""
       );
 
       return;

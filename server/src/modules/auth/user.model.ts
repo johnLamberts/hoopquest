@@ -1,6 +1,6 @@
 import { authorizationRoles } from "@/constants";
 import { IUser } from "@/types/user.interface";
-import { Schema } from "mongoose";
+import { model, models, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { environmentConfig } from "@/configs";
@@ -42,7 +42,6 @@ const UserSchema: Schema<IUserDocument> = new Schema(
       trim: true,
       lowercase: true,
       maxLength: [128, "Email can't be greater than 128 characters"],
-      index: false,
     },
 
     password: {
@@ -136,3 +135,5 @@ UserSchema.methods.createJWT = function () {
     expiresIn: environmentConfig.JWT_EXPIRES_IN,
   });
 };
+
+export default models.User || model<IUserDocument>("User", UserSchema);

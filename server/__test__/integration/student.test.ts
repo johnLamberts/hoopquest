@@ -1,3 +1,4 @@
+import app from "@/app";
 import { environmentConfig } from "@/configs";
 import mongoose from "mongoose";
 import request from "supertest";
@@ -19,7 +20,6 @@ beforeAll((done) => {
       done();
     });
 });
-import supertest from "supertest";
 
 afterAll(async () => {
   mongoose?.connection?.db?.dropDatabase();
@@ -34,7 +34,20 @@ describe("Student", () => {
 
   describe("given the email is not valid", () => {
     it("should return a 422 status with validation message", async () => {
-      await request(app).post("/api/v1/add_student").field({});
+      await request(app)
+        .post("/api/v1/add_student")
+        .field({
+          ...userPayload,
+          email: "notEmail",
+        })
+        .set("Content-Type", "multipart/form-data")
+        .expect("Content-Type", /json/)
+        .then((response) => {
+          expect(response.body).toMatchObject({
+            data: null,
+            status,
+          });
+        });
     });
   });
 });

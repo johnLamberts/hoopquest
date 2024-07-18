@@ -1,6 +1,6 @@
 node_modules
 logs/*.log
-
+dist/
 
 # Optional npm cache directory
 .npm

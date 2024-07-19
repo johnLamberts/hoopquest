@@ -19,6 +19,20 @@ export const environmentConfig = {
   CLOUDINARY_NAME: process.env.CLOUDINARY_NAME as string,
   CLOUDINARY_SECRET_KEY: process.env.CLOUDINARY_SECRET_KEY as string,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+
+  JWT_ISSUER: process.env.JWT_ISSUER as string,
+
+  ACCESS_TOKEN_SECRET_KEY: process.env.ACCESS_TOKEN_SECRET_KEY as string,
+  REFRESH_TOKEN_SECRET_KEY: process.env.REFRESH_TOKEN_SECRET_KEY as string,
+  ACCESS_TOKEN_KEY_EXPIRE_TIME: process.env
+    .ACCESS_TOKEN_KEY_EXPIRE_TIME as string,
+  REFRESH_TOKEN_KEY_EXPIRE_TIME: process.env
+    .REFRESH_TOKEN_KEY_EXPIRE_TIME as string,
+
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY as string,
+  ADMIN_SENDGRID_EMAIL: process.env.ADMIN_SENDGRID_EMAIL as string,
+
+  WEBSITE_URL: process.env.WEBSITE_URL as string,
 };
 
 // PORT=8001

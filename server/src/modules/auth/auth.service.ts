@@ -145,6 +145,10 @@ class AuthService {
     }
   }
 
+  static async login(req: Request, res: Response, next: NextFunction) {
+    const { email, password } = req.body;
+  }
+
   static async verifyEmail(req: Request, res: Response, next: NextFunction) {
     try {
       // console.log(req.params.userId, req.params.token);

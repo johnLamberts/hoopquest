@@ -13,6 +13,10 @@ const userSchemaValidation = {
     isVerified: Joi.boolean(),
     isDeleted: Joi.boolean(),
   }),
+  loginUser: Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).required(),
+  }),
   verifyUserEmail: Joi.object({
     token: Joi.string().min(3).max(300).required(),
     userId: Joi.string().required(),

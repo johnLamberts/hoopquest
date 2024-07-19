@@ -9,6 +9,7 @@ import Token, { TokenInterfaceDocument } from "../shared/models/token.model";
 import { SignOptions } from "jsonwebtoken";
 import { environmentConfig } from "@/configs";
 import { sendEmailVerificationEmail } from "@/utils/send-email";
+import { ObjectId } from "mongoose";
 class AuthService {
   static async signup(
     req: Request,
@@ -147,6 +148,123 @@ class AuthService {
 
   static async login(req: Request, res: Response, next: NextFunction) {
     const { email, password } = req.body;
+
+    console.log(email, password);
+    try {
+      const user = (await User.findOne({ email })
+        .select("+password")
+        .exec()) as IUserDocument;
+
+      // 401 unauthorized
+      if (!user) {
+        return next(createHttpError(401, "Auth failed (Invalid credentials)"));
+      }
+
+      // Compare password
+      const isPasswordCorrect = await user.comparePassword(password);
+
+      if (!isPasswordCorrect)
+        return next(createHttpError(401, "Invalid Password."));
+
+      let token = (await Token.findOne({
+        userId: user._id,
+      })) as TokenInterfaceDocument;
+
+      console.log(token);
+
+      if (!token) {
+        token = await new Token({ userId: user._id });
+        token = await token.save();
+      }
+
+      const generatedAccessToken = await token.generateToken(
+        {
+          userId: user._id as ObjectId,
+        },
+        environmentConfig.ACCESS_TOKEN_SECRET_KEY,
+        {
+          expiresIn: "1h",
+          issuer: environmentConfig.JWT_ISSUER,
+          audience: String(user._id),
+        }
+      );
+
+      const generatedRefreshToken = await token.generateToken(
+        {
+          userId: user._id as ObjectId,
+        },
+        environmentConfig.REFRESH_TOKEN_SECRET_KEY,
+        {
+          expiresIn: "5h",
+          issuer: environmentConfig.JWT_ISSUER,
+          audience: String(user._id),
+        }
+      );
+
+      console.log(generatedAccessToken, generatedRefreshToken);
+
+      // Save the updated Token
+      token.refreshToken = generatedRefreshToken;
+      token.accessToken = generatedAccessToken;
+      token = await token.save();
+
+      // check user is verified or not
+      if (!user.isVerified || user.status !== "active") {
+        const verifyEmailLink = `${environmentConfig.WEBSITE_URL}/verify-email?id=${user._id}&token=${token.refreshToken}`;
+
+        const responseData = {
+          accessToken: token.accessToken,
+          refreshToken: token.refreshToken,
+          verifyEmailLink,
+        };
+
+        return res.status(401).json(
+          customResponse<typeof responseData>({
+            data: responseData,
+            success: false,
+            error: true,
+            message: `Your Email has not been verified. An Email with Verification link has been sent to your account ${user.email} Please Verify Your Email first or use the email verification lik which is been send with the response to verfiy your email`,
+            statusCode: 401,
+          })
+        );
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // const { password: pass, confirmPassword: confPass, isVerified, status } = user;
+
+      const data = {
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        user: user,
+      };
+
+      // Set cookies
+      res.cookie("accessToken", token.accessToken, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // one days
+        secure: process.env.NODE_ENV === "production",
+      });
+
+      res.cookie("refreshToken", token.refreshToken, {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        secure: process.env.NODE_ENV === "production",
+      });
+
+      // Set refreshToken' AND accessToken IN cookies
+      return res.status(200).json(
+        customResponse<typeof data>({
+          success: true,
+          error: false,
+          message: "Auth logged in successful.",
+          statusCode: 200,
+          data,
+        })
+      );
+    } catch (err) {
+      console.log(`[LoginError]: ${err}`.bg_white.red);
+      return next(err);
+    }
   }
 
   static async verifyEmail(req: Request, res: Response, next: NextFunction) {

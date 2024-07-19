@@ -146,6 +146,7 @@ UserSchema.methods.createJWT = function () {
     role: this.role,
   };
 
+  console.log(`[CreateJWT]: ${payload}`);
   return jwt.sign(payload, environmentConfig.JWT_KEY as string, {
     expiresIn: environmentConfig.JWT_EXPIRES_IN,
   });

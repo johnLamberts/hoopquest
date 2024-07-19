@@ -1,11 +1,15 @@
 import { TokenInterface } from "@/types/token.interface";
 import { Document, model, models, Schema } from "mongoose";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 
 export interface TokenInterfaceDocument extends Document, TokenInterface {
   generatePasswordReset(): Promise<void>;
   generateEmailVerificationToken(): Promise<void>;
-  generateToken(): Promise<string>;
+  generateToken(
+    payload: { userId: Schema.Types.ObjectId },
+    secret: string,
+    signOptions: any
+  ): Promise<string>;
 }
 
 export const TokenSchema: Schema<TokenInterfaceDocument> = new Schema(
@@ -67,6 +71,11 @@ TokenSchema.methods.generateToken = function (
       secret,
       signOptions,
       (err: Error | null, encoded: string | undefined) => {
+        console.log(
+          `[Payload,Secret,SignOptions]: ${payload}, ${secret}, ${signOptions.expiresIn}`
+        );
+
+        console.log(`[Encoded]: ${encoded}`);
         if (err === null && encoded !== undefined) {
           resolve(encoded);
         } else {

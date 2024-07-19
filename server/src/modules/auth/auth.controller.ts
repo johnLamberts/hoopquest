@@ -6,6 +6,10 @@ class AuthController {
     return AuthService.signup(req, res, next);
   }
 
+  static login(req: Request, res: Response, next: NextFunction) {
+    return AuthService.login(req, res, next);
+  }
+
   static verifyEmailController(
     req: Request,
     res: Response,

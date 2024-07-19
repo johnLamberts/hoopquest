@@ -7,3 +7,11 @@ export const signupUserValidation: RequestHandler = (
   res: Response,
   next: NextFunction
 ) => validator(userSchemaValidation.signupUser, req.body, next);
+
+export const verifyUserEmailValidation: RequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  return validator(userSchemaValidation.verifyUserEmail, req.params, next);
+};

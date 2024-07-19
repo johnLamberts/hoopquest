@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import router from "./modules/route";
 import notFoundMiddleware from "./middlewares/error/notFound";
 import errorHandlingMiddleware from "./middlewares/error/errorHandling";
+import helmet from "helmet";
 
 colors?.enable();
 
@@ -29,6 +30,13 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+  })
+);
 
 // Server all static files inside public directory
 app.use("/static", express.static("public"));

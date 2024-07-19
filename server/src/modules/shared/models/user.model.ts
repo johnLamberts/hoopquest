@@ -90,6 +90,11 @@ const UserSchema: Schema<IUserDocument> = new Schema(
       required: false,
     },
 
+    isVerified: {
+      type: Boolean,
+      required: false,
+    },
+
     resetPasswordExpires: {
       type: Date,
       required: false,

@@ -4,7 +4,7 @@ import createHttpError, { InternalServerError } from "http-errors";
 import customResponse from "@/utils/custom-response";
 import { cloudinary } from "@/middlewares/file-upload";
 import { deleteFile } from "@/utils";
-import User from "../shared/models/user.model";
+import User, { IUserDocument } from "../shared/models/user.model";
 import Token, { TokenInterfaceDocument } from "../shared/models/token.model";
 import { SignOptions } from "jsonwebtoken";
 import { environmentConfig } from "@/configs";
@@ -65,6 +65,7 @@ class AuthService {
         firstName,
         lastName,
         confirmPassword,
+        isVerified: false,
         profileImg: cloudinaryResult?.secure_url,
         cloudinary_id: cloudinaryResult?.public_id,
       });
@@ -146,7 +147,8 @@ class AuthService {
 
   static async verifyEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await User.findById(req.params.userId);
+      // console.log(req.params.userId, req.params.token);
+      const user = (await User.findById(req.params.userId)) as IUserDocument;
 
       if (!user) {
         return next(
@@ -170,12 +172,13 @@ class AuthService {
         );
       }
 
-      const emailVerificationToken = await Token.findOne({
+      const emailToken = (await Token.findOne({
         userId: user._id,
         refreshToken: req.params.token,
-      });
+      })) as TokenInterfaceDocument;
 
-      if (!emailVerificationToken) {
+      console.log(`EMAIL TOKEN: ${emailToken}`.bg_black.white);
+      if (!emailToken) {
         return next(
           createHttpError(
             400,
@@ -186,9 +189,12 @@ class AuthService {
 
       user.isVerified = true;
       user.status = "active";
-      user.acceptTerms = true;
       await user.save();
-      await emailVerificationToken.delete();
+
+      // await emailToken.delete();
+      await emailToken.deleteOne({ userId: user._id });
+
+      console.log(emailToken);
 
       return res.status(200).json(
         customResponse({

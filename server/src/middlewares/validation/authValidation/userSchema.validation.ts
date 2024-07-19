@@ -13,6 +13,10 @@ const userSchemaValidation = {
     isVerified: Joi.boolean(),
     isDeleted: Joi.boolean(),
   }),
+  verifyUserEmail: Joi.object({
+    token: Joi.string().min(3).max(300).required(),
+    userId: Joi.string().required(),
+  }),
   validatedUserId: Joi.object({
     userId: Joi.string()
       .regex(/^[0-9a-fA-F]{24}$}/)
